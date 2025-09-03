@@ -46,9 +46,7 @@ early_only, degrada fuertemente el desempeño (RMSE = 2.5486), confirmando que
 time_spent es indispensable y past_sessions el segundo motor; device/OS aportan, pero de 
 forma marginal.
 
-#### 3. ¿Qué tanto cae la capacidad predictiva si solo usamos variables “tempranas” (p. ej., 
-device_type, is_returning_user, past_sessions) sin time_spent? (Útil para casos de 
-decisión en tiempo real). 
+#### 3. ¿Qué tanto cae la capacidad predictiva si solo usamos variables “tempranas” (p. ej., device_type, is_returning_user, past_sessions) sin time_spent? (Útil para casos de decisión en tiempo real). 
 La predicción cae mucho cuando usamos solo variables “tempranas” y excluimos time_spent. 
 En el modelo ganador (XGBReg), el baseline con todas las variables logra RMSE = 1.6574, 
 MAE = 1.1158 y R² = 0.6342. Al pasar al escenario early_only (past_sessions, device_type, 
@@ -59,8 +57,7 @@ recupera precisión frente a usar solo past_sessions (RMSE 2.5913): la mejora es
 queda para decisiones gruesas en tiempo real, no para pronósticos detallados del gasto (Ver 
 Figura 2). 
 ### Predicción (clasificación) 
-#### 4. ¿Cuál modelo predice mejor la probabilidad de registro (sign_up) y qué umbrales 
-maximizan F1 o equilibran precisión–recobro? 
+#### 4. ¿Cuál modelo predice mejor la probabilidad de registro (sign_up) y qué umbrales maximizan F1 o equilibran precisión–recobro? 
 Hablando sobre predicción de registro (sign_up), en el holdout que corrimos, el poder de 
 ranking medido por AUC muestra un empate entre Logistic Regression y XGBoost (AUC ≈ 
 0.594 en ambos casos; (ver Figura 3), por encima de KNN (AUC ≈ 0.548) y de Random 
@@ -76,9 +73,7 @@ solo sirve como referencia extrema. En conclusión, para priorizar por probabili
 corte, LogReg/XGB son preferibles por su mayor AUC; si hay que fijar un único umbral, RF 
 @ 0.676 ofrece el mejor balance precisión–recobro en nuestro experimento.
 ### Uso práctico del modelo 
-#### 5. Con el mejor modelo de regresión, ¿qué reglas de decisión simples (p. ej., top-N 
-sesiones esperadas con mayor Revenue) capturan más ingreso esperado que 
-estrategias baselines? 
+#### 5. Con el mejor modelo de regresión, ¿qué reglas de decisión simples (p. ej., top-N sesiones esperadas con mayor Revenue) capturan más ingreso esperado que estrategias baselines? 
 El mejor modelo de regresión para Revenue fue XGBReg (R²≈0.63; RMSE≈1.66); al 
 capturar no linealidades de past_sessions y time_spent (sus señales más influyentes), junto 
 con los dummies de dispositivo/SO, entrega estimaciones de ingreso esperado por sesión. Por 
@@ -90,9 +85,7 @@ ranking por ŷ combina señales y prioriza los casos con mayor E[Revenue∣X]. S
 aplica solo a registrados, el mismo criterio (top-N por ŷ usando el XGB entrenado en 
 sign_up=1) mantiene la ventaja; y, si se busca control de cobertura, puede añadirse un cupo 
 por segmento (device/OS) sin cambiar la lógica del ranking. 
-#### 6 . Con el mejor clasificador de registro, ¿qué política de priorización (ordenar por 
-probabilidad prevista) maximiza la captura de usuarios que sí se registran, dada una 
-capacidad limitada? 
+#### 6 . Con el mejor clasificador de registro, ¿qué política de priorización (ordenar por probabilidad prevista) maximiza la captura de usuarios que sí se registran, dada una capacidad limitada? 
 Para maximizar la captura de usuarios que se registran bajo capacidad limitada, la 
 política más efectiva es usar XGB entrenado para sign_up, predecir la probabilidad de 
 registro y ordenar los usuarios en orden descendente. De esta manera, selecciona los 
@@ -102,9 +95,7 @@ Youden J (thr = 0.430), se alcanzó un recall de 0.827 para los usuarios que se
 registran, lo que indica que una gran proporción de registros reales se captura al 
 actuar sobre los usuarios con mayor probabilidad prevista. 
 ### Comparación formal de modelos 
-#### 7. Entre todos los modelos probados, ¿cuál generaliza mejor según validación cruzada 
-(media ± desvío) y test holdout? ¿Las diferencias son materiales (intervalos se 
-separan) o están dentro del ruido? 
+#### 7. Entre todos los modelos probados, ¿cuál generaliza mejor según validación cruzada (media ± desvío) y test holdout? ¿Las diferencias son materiales (intervalos se separan) o están dentro del ruido? 
 En términos de predicción del gasto por sesión (Revenue), el modelo que generaliza mejor es 
 XGBoost Regressor (XGBReg). Esto se evidencia en que, usando un holdout 80/20, XGBReg 
 obtuvo R² = 0.6342, RMSE = 1.6574 y MAE = 1.1158, superando tanto a KNNReg (R² = 
